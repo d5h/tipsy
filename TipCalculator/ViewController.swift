@@ -55,6 +55,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var tipLabel: UILabel!
     @IBOutlet weak var totalLabel: UILabel!
     @IBOutlet weak var percentageControl: UISegmentedControl!
+    var percentages = [0.0, 0.0, 0.0]
     var tipRounding = RoundingType.None
     var totalRounding = RoundingType.None
     
@@ -65,7 +66,7 @@ class ViewController: UIViewController {
         }
         let billAmount = (billString as NSString).doubleValue
         let percentageIndex = percentageControl.selectedSegmentIndex
-        let percentage = [0.18, 0.20, 0.22][percentageIndex]
+        let percentage = percentages[percentageIndex] / 100.0
         var tipAmount = tipRounding.round(billAmount * percentage)
         let totalAmount = totalRounding.round(billAmount + tipAmount)
         if (totalAmount != billAmount + tipAmount) {
@@ -99,6 +100,23 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        setPercentageControl()
+        percentageControl.selectedSegmentIndex = 1
+        onEditingChange(0)
+    }
+    
+    func setPercentageControl() {
+        let defaultPercent = getDefaultPercent()
+        percentages[0] = floor(0.9 * defaultPercent)
+        percentages[1] = defaultPercent
+        percentages[2] = ceil(1.1 * defaultPercent)
+        percentageControl.setTitle(String(Int(percentages[0])), forSegmentAtIndex: 0)
+        percentageControl.setTitle(String(Int(percentages[1])), forSegmentAtIndex: 1)
+        percentageControl.setTitle(String(Int(percentages[2])), forSegmentAtIndex: 2)
     }
 
     override func didReceiveMemoryWarning() {
